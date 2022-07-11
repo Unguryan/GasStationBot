@@ -40,7 +40,7 @@ namespace GasStationBot.WOG_Station.Core
             }
         }
 
-        public GasStation ConvertTo(ResponseRequestGasStation response)
+        private GasStation ConvertTo(ResponseRequestGasStation response)
         {
             return new GasStation()
             {
@@ -51,7 +51,7 @@ namespace GasStationBot.WOG_Station.Core
             };
         }
 
-        public List<Fuel> GetFuels(ResponseRequestGasStation response)
+        private List<Fuel> GetFuels(ResponseRequestGasStation response)
         {
             var list = new List<Fuel>();
 
