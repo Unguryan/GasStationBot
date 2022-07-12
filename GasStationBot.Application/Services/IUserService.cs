@@ -1,15 +1,19 @@
-﻿using GasStationBot.Application.Models;
+﻿using GasStationBot.Domain.Entities;
 
 namespace GasStationBot.Application.Services
 {
     public interface IUserService
     {
-        Task<IEnumerable<IUser>> GetAllUsers();
 
-        Task<bool> AddUser(IUser user);
+        Task<IEnumerable<User>> GetAllUsers();
 
-        Task<bool> AddGasStationToUser(IUser user, IGasStation station);
+        Task<bool> AddUser(User user);
 
-        Task<bool> RemoveGasStationFromUser(IUser user, IGasStation station);
+        Task<bool> AddGasStationToUser(string userId, GasStation station);
+
+        Task<bool> RemoveGasStationFromUser(string userId, GasStation station);
+
+        Task<bool> UpdateGasStationState(string userId, GasStation station, List<Fuel> fuels);
+
     }
 }

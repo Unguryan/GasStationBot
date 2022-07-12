@@ -1,5 +1,5 @@
 ﻿using GasStationBot.Application.Services;
-using GasStationBot.Domain.Models.GasStation;
+using GasStationBot.Domain.Entities;
 using GasStationBot.WOG_Station.ResponseRequest_Models;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -8,6 +8,7 @@ namespace GasStationBot.WOG_Station.Core
 {
     public class WOG_GasStationService : IGasStationsService
     {
+        public string GasStationName => "WOG";
 
         public async Task<IEnumerable<GasStation>> GetGasStations()
         {
@@ -74,6 +75,7 @@ namespace GasStationBot.WOG_Station.Core
                 list.Add(new Fuel()
                 {
                     Name = fuelName,
+                    FuelType = GetFuelType(fuelName),
                     StateOfFuel = fuelState
                 });
             }
@@ -92,6 +94,12 @@ namespace GasStationBot.WOG_Station.Core
             //ДП - Пальне в? дсутнє.
             //МДП + -Пальне в? дсутнє.
             //ГАЗ - Гот ? вка, банк.картки.Гаманець ПРАЙД . Талони.Паливна картка(л? м?т картки).
+        }
+
+        private FuelType GetFuelType(string name)
+        {
+            //TODO: Update this, possible null error
+            return WOG_Constants.FuelTypes.FirstOrDefault(f => f.Key == name).Value;
         }
 
         private string GetFuelName(string fuelString)

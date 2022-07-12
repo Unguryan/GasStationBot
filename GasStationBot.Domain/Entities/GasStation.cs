@@ -1,4 +1,4 @@
-﻿namespace GasStationBot.Domain.Models.GasStation
+﻿namespace GasStationBot.Domain.Entities
 {
     public record GasStation
     {

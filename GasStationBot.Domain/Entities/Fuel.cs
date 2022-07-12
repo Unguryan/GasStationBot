@@ -1,11 +1,11 @@
-﻿using GasStationBot.Domain.Models.User;
-
-namespace GasStationBot.Domain.Models.GasStation
+﻿namespace GasStationBot.Domain.Entities
 {
     public record Fuel
     {
 
         public string Name { get; init; }
+
+        public FuelType FuelType { get; init; }
 
         public bool IsExist => !StateOfFuel.Any(x => x.Equals(FuelState.NotExist));
 

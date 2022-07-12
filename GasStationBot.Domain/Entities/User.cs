@@ -1,4 +1,4 @@
-﻿namespace GasStationBot.Domain.Models.User
+﻿namespace GasStationBot.Domain.Entities
 {
     public class User
     {
@@ -7,7 +7,7 @@
 
         public string Name { get; set; }
 
-        public List<UserGasStation> GasStations { get; set; }
+        public List<GasStation> GasStations { get; set; }
 
     }
 }
