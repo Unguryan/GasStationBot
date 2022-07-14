@@ -21,6 +21,9 @@ namespace GasStationBot.Infrastructure
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INotifyUserService, NotifyUserService>();
 
+            services.AddScoped<IGasStationBackgroundWorker, GasStationBackgroundWorker>();
+            services.AddHostedService<GasStationBackgroundWorkerHostedService>();
+
             services.AddTelegramServices();
 
             return services;
