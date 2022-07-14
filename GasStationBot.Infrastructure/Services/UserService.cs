@@ -16,12 +16,12 @@ namespace GasStationBot.Infrastructure.Services
 
         public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return await _context.Users.Include(u => u.GasStations).ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<User> GetUserById(string id)
         {
-            return await _context.Users.Include(u => u.GasStations).SingleOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<bool> AddUser(User user)
@@ -34,12 +34,31 @@ namespace GasStationBot.Infrastructure.Services
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
+
+            //await _context.Users.AddAsync(user).AsTask()
+            //    .ContinueWith(async (t) =>
+            //    {
+            //        await _context.SaveChangesAsync();
+            //    });
+
+            //try
+            //{
+
+            //    var res = _context.Users.Add(user);
+            //    _context.SaveChanges();
+            //}
+            //catch(Exception e)
+            //{
+            //    return false;
+            //}
+
+
             return true;
         }
 
         public async Task<bool> AddGasStationToUser(string userId, GasStation gasStation)
         {
-            var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null ||
                 user.GasStations == null ||
                 user.GasStations.Any(g => g.City == gasStation.City
@@ -56,7 +75,7 @@ namespace GasStationBot.Infrastructure.Services
 
         public async Task<bool> RemoveGasStationFromUser(string userId, GasStation gasStation)
         {
-            var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null ||
                 user.GasStations == null ||
                 !user.GasStations.Any(g => g.City == gasStation.City
@@ -76,7 +95,7 @@ namespace GasStationBot.Infrastructure.Services
 
         public async Task<bool> UpdateGasStationState(string userId, GasStation gasStation, List<Fuel> fuels)
         {
-            var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null ||
                 user.GasStations == null ||
                 //TODO: Check how Equals will work for records
@@ -97,5 +116,9 @@ namespace GasStationBot.Infrastructure.Services
             return true;
         }
 
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }

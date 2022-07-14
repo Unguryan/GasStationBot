@@ -15,9 +15,14 @@ namespace GasStationBot.TelegramBot.Core
         {
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = File.ReadAllText(Path);
-                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)!;
-                return users.SingleOrDefault(u => u.Id == userId)?.UserState ?? null;
+                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)?.ToList() ?? new List<UserStateDataModel>();
+                return users?.SingleOrDefault(u => u.Id == userId)?.UserState ?? null;
             }
         }
 
@@ -26,8 +31,13 @@ namespace GasStationBot.TelegramBot.Core
         {
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = File.ReadAllText(Path);
-                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)!.ToList();
+                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)?.ToList() ?? new List<UserStateDataModel>();
                 var user = users.SingleOrDefault(u => u.Id == userId);
 
                 if (user == null)
@@ -51,8 +61,13 @@ namespace GasStationBot.TelegramBot.Core
         {
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = File.ReadAllText(Path);
-                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)!;
+                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)?.ToList() ?? new List<UserStateDataModel>();
                 return users.SingleOrDefault(u => u.Id == userId)?.TempData ?? null;
             }
         }
@@ -61,8 +76,13 @@ namespace GasStationBot.TelegramBot.Core
         {
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = File.ReadAllText(Path);
-                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)!.ToList();
+                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)?.ToList() ?? new List<UserStateDataModel>();
                 var user = users.SingleOrDefault(u => u.Id == userId);
 
                 if (user == null)
@@ -86,8 +106,13 @@ namespace GasStationBot.TelegramBot.Core
         {
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = File.ReadAllText(Path);
-                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)!.ToList();
+                var users = JsonConvert.DeserializeObject<IEnumerable<UserStateDataModel>>(json)?.ToList() ?? new List<UserStateDataModel>();
                 var user = users.SingleOrDefault(u => u.Id == userId);
 
                 if (user == null)

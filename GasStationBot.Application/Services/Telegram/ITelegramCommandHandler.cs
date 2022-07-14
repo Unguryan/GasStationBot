@@ -2,8 +2,13 @@
 
 namespace GasStationBot.Application.Services.Telegram
 {
-    public interface ITelegramCommandHandler<T> where T : ITelegramCommand
+    public interface ITelegramCommandHandler<T> : ITelegramCommandHandler where T : ITelegramCommand
     {
-        Task<UserState> Handle(T command);
+        T Command { get; }
+    }
+
+    public interface ITelegramCommandHandler
+    {
+        Task<UserState> Handle(ITelegramCommand command);
     }
 }

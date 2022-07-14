@@ -1,4 +1,5 @@
 using GasStationBot.Infrastructure;
+using GasStationBot.Infrastructure.DB;
 using GasStationBot.WebHook.Core;
 using Telegram.Bot;
 
@@ -30,5 +31,19 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
+//just to fix
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<GasStationContext>();
+        context.Database.EnsureCreated();
+        context.SaveChanges();
+    }
+    catch
+    {
+    }
+}
 
 app.Run();

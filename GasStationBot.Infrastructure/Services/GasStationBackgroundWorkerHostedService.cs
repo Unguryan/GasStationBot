@@ -38,8 +38,7 @@ namespace GasStationBot.Infrastructure.Services
             using(var scope = _services.CreateScope())
             {
                 var backgroundWorker = scope.ServiceProvider.GetRequiredService<IGasStationBackgroundWorker>();
-                var notifyUserService = scope.ServiceProvider.GetRequiredService<INotifyUserService>();
-                await backgroundWorker.DoWork(notifyUserService, stoppingToken);
+                await backgroundWorker.DoWork(scope.ServiceProvider, stoppingToken);
             }
         }
     }

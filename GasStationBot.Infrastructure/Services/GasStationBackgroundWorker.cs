@@ -1,4 +1,5 @@
 ﻿using GasStationBot.Application.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GasStationBot.Infrastructure.Services
@@ -15,11 +16,16 @@ namespace GasStationBot.Infrastructure.Services
 
         private int executionCount = 0;
 
-        public async Task DoWork(INotifyUserService notifyUserService, CancellationToken cancellationToken)
+        public async Task DoWork(IServiceProvider services, CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                await notifyUserService.NotifyAllUsers();
+                using (var scope = services.CreateScope())
+                {
+                    var notifyUserService = scope.ServiceProvider.GetRequiredService<INotifyUserService>();
+                    await notifyUserService.NotifyAllUsers();
+                }
+
                 executionCount++;
                 _logger.LogInformation($"Notify User: {executionCount}");
 

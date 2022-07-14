@@ -35,10 +35,10 @@ namespace GasStationBot.WOG_Station.Core
                 {
                     var responseStation = await httpClient.GetAsync(item.Link);
                     var stationString = await responseStation.Content.ReadAsStringAsync();
-                    var station = JsonConvert.DeserializeObject<ResponseRequestGasStation>(stationString);
+                    var station = JsonConvert.DeserializeObject<ResponseRequestGasStationModel>(stationString);
                     if (station != null)
                     {
-                        res.Add(ConvertTo(station));
+                        res.Add(ConvertTo(station.Data));
                     }
                 }
 
@@ -149,6 +149,11 @@ namespace GasStationBot.WOG_Station.Core
             //TODO: update locker
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = JsonConvert.SerializeObject(res);
                 File.WriteAllText(Path, json);
             }
@@ -158,8 +163,13 @@ namespace GasStationBot.WOG_Station.Core
         {
             lock (locker)
             {
+                if (!File.Exists(Path))
+                {
+                    File.Create(Path).Dispose();
+                };
+
                 var json = File.ReadAllText(Path);
-                return JsonConvert.DeserializeObject<IEnumerable<GasStation>>(json)!;
+                return JsonConvert.DeserializeObject<IEnumerable<GasStation>>(json) ?? new List<GasStation>();
             }
         }
 

@@ -75,7 +75,10 @@ namespace GasStationBot.TelegramBot.Core
                 updatedUserState = await _mediator.Send(new StartMenuCommand(userId, userMessage));
                 _userStateService.SetUserState(userId, updatedUserState.Value);
                 
-                CheckOrAddUser(message.Chat.Id.ToString(), message.Chat.FirstName!);
+                await CheckOrAddUser(message.Chat.Id.ToString(), message.Chat.FirstName!);
+
+                var baseMenuCommand = _commandFactory.TryToCreateEmptyCommandByUserState(updatedUserState.Value, userId);
+                await _mediator.Send(baseMenuCommand);
                 return;
             }
 

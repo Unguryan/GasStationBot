@@ -2,6 +2,6 @@
 {
     public interface IGasStationBackgroundWorker
     {
-        Task DoWork(INotifyUserService notifyUserService, CancellationToken cancellationToken);
+        Task DoWork(IServiceProvider services, CancellationToken cancellationToken);
     }
 }

@@ -21,11 +21,11 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
         protected abstract Task<UserState> HandleCommand();
 
-        protected T Command { get; private set; }
+        public T Command { get; private set; }
 
-        public async Task<UserState> Handle(T command)
+        public async Task<UserState> Handle(ITelegramCommand command)
         {
-            Command = command;
+            Command = (T)command;
             //TODO: Refactor this code 
             //if message == "", just show menu
 

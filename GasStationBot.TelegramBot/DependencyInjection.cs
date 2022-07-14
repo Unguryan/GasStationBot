@@ -12,6 +12,7 @@ namespace GasStationBot.TelegramBot
         {
             services.AddScoped<ITelegramUserStateService, TelegramUserStateService>();
             services.AddScoped<ITelegramCommandFactory, TelegramCommandFactory>();
+            services.AddScoped<ITelegramCommandHandlerFactory, TelegramCommandHandlerFactory>();
             services.AddScoped<ITelegramMessageMediator, TelegramMessageMediator>();
             services.AddScoped<ITelegramHandlerService, TelegramHandlerService>();
 
