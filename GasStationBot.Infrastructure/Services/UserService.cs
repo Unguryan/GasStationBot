@@ -37,49 +37,59 @@ namespace GasStationBot.Infrastructure.Services
             return true;
         }
 
-        public async Task<bool> AddGasStationToUser(string userId, GasStation station)
+        public async Task<bool> AddGasStationToUser(string userId, GasStation gasStation)
         {
             var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null ||
                 user.GasStations == null ||
-                user.GasStations.Any(g => g.Equals(station)))
+                user.GasStations.Any(g => g.City == gasStation.City
+                                       && g.Address == gasStation.Address
+                                       && g.Provider == gasStation.Provider))
             {
                 return false;
             }
 
-            user.GasStations.Add(station);
+            user.GasStations.Add(gasStation);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> RemoveGasStationFromUser(string userId, GasStation station)
+        public async Task<bool> RemoveGasStationFromUser(string userId, GasStation gasStation)
         {
             var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null ||
                 user.GasStations == null ||
-                !user.GasStations.Any(g => g.Equals(station)))
+                !user.GasStations.Any(g => g.City == gasStation.City
+                                        && g.Address == gasStation.Address
+                                        && g.Provider == gasStation.Provider))
             {
                 return false;
             }
 
-            var stationToRemove = user.GasStations.First(g => g.Equals(station));
+            var stationToRemove = user.GasStations.First(g => g.City == gasStation.City
+                                                           && g.Address == gasStation.Address
+                                                           && g.Provider == gasStation.Provider);
             user.GasStations.Remove(stationToRemove);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UpdateGasStationState(string userId, GasStation station, List<Fuel> fuels)
+        public async Task<bool> UpdateGasStationState(string userId, GasStation gasStation, List<Fuel> fuels)
         {
             var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null ||
                 user.GasStations == null ||
                 //TODO: Check how Equals will work for records
-                !user.GasStations.Any(g => g.Equals(station)))
+                !user.GasStations.Any(g => g.City == gasStation.City
+                                        && g.Address == gasStation.Address
+                                        && g.Provider == gasStation.Provider))
             {
                 return false;
             }
 
-            var stationToUpdate = user.GasStations.First(g => g.Equals(station));
+            var stationToUpdate = user.GasStations.First(g => g.City == gasStation.City
+                                                           && g.Address == gasStation.Address
+                                                           && g.Provider == gasStation.Provider);
 
             stationToUpdate.Fuels.Clear();
             fuels.ForEach(f => stationToUpdate.Fuels.Add(f));

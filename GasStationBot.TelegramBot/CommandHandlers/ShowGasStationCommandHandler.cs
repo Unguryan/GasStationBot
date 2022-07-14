@@ -47,7 +47,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             foreach (var gs in user.GasStations)
             {
                 sb.AppendLine($"ІД: {counter++}");
-                sb.AppendLine($"Провадер: {gs.Provider}");
+                sb.AppendLine($"Власник АЗС: {gs.Provider}");
                 sb.AppendLine($"Місто: {gs.City}");
                 sb.AppendLine($"Адреса: {gs.Address}");
 

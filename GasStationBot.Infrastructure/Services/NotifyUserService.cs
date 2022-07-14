@@ -1,5 +1,9 @@
 ﻿using GasStationBot.Application.Services;
 using GasStationBot.Domain.Entities;
+using GasStationBot.Domain.Extensions;
+using System.Text;
+using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace GasStationBot.Infrastructure.Services
 {
@@ -8,13 +12,17 @@ namespace GasStationBot.Infrastructure.Services
 
         private readonly IUserService _userService;
 
-        private readonly IEnumerable<IGasStationsService> gasStationsServices;
+        private readonly IEnumerable<IGasStationsService> _gasStationsServices;
+
+        private readonly ITelegramBotClient _botClient;
 
         public NotifyUserService(IUserService userService,
-                                 IEnumerable<IGasStationsService> gasStationsServices)
+                                 IEnumerable<IGasStationsService> gasStationsServices,
+                                 ITelegramBotClient botClient)
         {
             _userService = userService;
-            this.gasStationsServices = gasStationsServices;
+            _gasStationsServices = gasStationsServices;
+            _botClient = botClient;
         }
 
         public async Task NotifyAllUsers()
@@ -22,7 +30,7 @@ namespace GasStationBot.Infrastructure.Services
             var users = await _userService.GetAllUsers();
             var gasStations = new List<GasStation>();
 
-            foreach (var gasStationsService in gasStationsServices)
+            foreach (var gasStationsService in _gasStationsServices)
             {
                 gasStations.AddRange(await gasStationsService.GetGasStations());
             }
@@ -53,9 +61,48 @@ namespace GasStationBot.Infrastructure.Services
                     }
 
                     //TODO: Use Telegram API, to send updated info for users
-                    await _userService.UpdateGasStationState(selectedUser.Id, userGasStation, updatedFuels);
+                    var result = await _userService.UpdateGasStationState(selectedUser.Id, userGasStation, updatedFuels);
+                    if (result)
+                    {
+                        await NotifyUser(selectedUser, userGasStation, updatedFuels);
+                    }
                 }
             }
+        }
+
+        private async Task NotifyUser(Domain.Entities.User selectedUser,
+                                      GasStation userGasStation,
+                                      List<Fuel> updatedFuels)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Апдейт по АЗС!");
+
+            sb.AppendLine($"Власник АЗС: {userGasStation.Provider}");
+            sb.AppendLine($"Місто: {userGasStation.City}");
+            sb.AppendLine($"Адреса: {userGasStation.Address}");
+            sb.AppendLine();
+
+            sb.AppendLine($"Оновлене Паливо: ");
+
+            foreach (var fuel in updatedFuels)
+            {
+                var sbFuelState = new StringBuilder();
+
+                sbFuelState.Append($"Паливо {fuel.FuelType} - ");
+                for (int i = 0; i < fuel.StateOfFuel.Count; i++)
+                {
+                    sbFuelState.Append($"{fuel.StateOfFuel[i].GetDescription()}");
+                    if (i != fuel.StateOfFuel.Count - 1)
+                    {
+                        sbFuelState.Append($", ");
+                    }
+                }
+                
+                sb.AppendLine(sbFuelState.ToString());
+            }
+
+            await SendMessage(selectedUser.Id, sb.ToString());
         }
 
         private List<Fuel> GetUpdatedFuels(GasStation gasStation, GasStation userGasStation)
@@ -95,6 +142,20 @@ namespace GasStationBot.Infrastructure.Services
             }
 
             return result;
+        }
+
+        private async Task<bool> SendMessage(string userId, string message)
+        {
+            try
+            {
+                await _botClient.SendTextMessageAsync(new ChatId(long.Parse(userId)), message);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
