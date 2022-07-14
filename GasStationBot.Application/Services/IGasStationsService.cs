@@ -8,5 +8,6 @@ namespace GasStationBot.Application.Services
 
         Task<IEnumerable<GasStation>> GetGasStations();
 
+        Task<IEnumerable<GasStation>> GetGasStationsWithoutAdditionalData();
     }
 }

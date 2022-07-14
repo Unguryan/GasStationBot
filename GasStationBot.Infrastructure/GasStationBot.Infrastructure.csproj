@@ -10,10 +10,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Telegram.Bot" Version="18.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GasStationBot.Application\GasStationBot.Application.csproj" />
+    <ProjectReference Include="..\GasStationBot.TelegramBot\GasStationBot.TelegramBot.csproj" />
     <ProjectReference Include="..\GasStationBot.WOG_Station\GasStationBot.WOG_Station.csproj" />
   </ItemGroup>
 

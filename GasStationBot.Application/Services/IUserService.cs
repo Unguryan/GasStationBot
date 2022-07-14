@@ -7,6 +7,8 @@ namespace GasStationBot.Application.Services
 
         Task<IEnumerable<User>> GetAllUsers();
 
+        Task<User> GetUserById(string id);
+
         Task<bool> AddUser(User user);
 
         Task<bool> AddGasStationToUser(string userId, GasStation station);

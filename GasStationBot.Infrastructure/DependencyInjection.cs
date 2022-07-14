@@ -1,6 +1,7 @@
 ﻿using GasStationBot.Application.Services;
 using GasStationBot.Infrastructure.DB;
 using GasStationBot.Infrastructure.Services;
+using GasStationBot.TelegramBot;
 using GasStationBot.WOG_Station.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,8 @@ namespace GasStationBot.Infrastructure
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INotifyUserService, NotifyUserService>();
+
+            services.AddTelegramServices();
 
             return services;
         }

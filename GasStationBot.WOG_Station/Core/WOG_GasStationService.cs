@@ -10,6 +10,11 @@ namespace GasStationBot.WOG_Station.Core
     {
         public string GasStationName => "WOG";
 
+        private const string Path = "WogStations.json";
+
+        private object locker = new object();
+
+        //Takes 90 seconds
         public async Task<IEnumerable<GasStation>> GetGasStations()
         {
             var httpClient = new HttpClient();
@@ -37,8 +42,16 @@ namespace GasStationBot.WOG_Station.Core
                     }
                 }
 
+                //TODO: Store updated data in file
+                SetDataToFile(res);
                 return res;
             }
+        }
+
+        public async Task<IEnumerable<GasStation>> GetGasStationsWithoutAdditionalData()
+        {
+            //TODO: Add stored gasStation in memory, just hold in memory
+            return GetDataFromFile();
         }
 
         private GasStation ConvertTo(ResponseRequestGasStation response)
@@ -130,5 +143,25 @@ namespace GasStationBot.WOG_Station.Core
 
             return result;
         }
+
+        private void SetDataToFile(IEnumerable<GasStation> res)
+        {
+            //TODO: update locker
+            lock (locker)
+            {
+                var json = JsonConvert.SerializeObject(res);
+                File.WriteAllText(Path, json);
+            }
+        }
+
+        private IEnumerable<GasStation> GetDataFromFile()
+        {
+            lock (locker)
+            {
+                var json = File.ReadAllText(Path);
+                return JsonConvert.DeserializeObject<IEnumerable<GasStation>>(json)!;
+            }
+        }
+
     }
 }

@@ -47,7 +47,7 @@ namespace GasStationBot.Infrastructure.Services
                                                                           && g.Provider == gasStation.Provider);
 
                     var updatedFuels = GetUpdatedFuels(gasStation, userGasStation);
-                    if(updatedFuels == null || !updatedFuels.Any())
+                    if (updatedFuels == null || !updatedFuels.Any())
                     {
                         continue;
                     }
@@ -64,7 +64,7 @@ namespace GasStationBot.Infrastructure.Services
             foreach (var userFuel in userGasStation.Fuels)
             {
                 var tempGasStationFuel = gasStation.Fuels.FirstOrDefault(f => f.FuelType == userFuel.FuelType);
-                if(tempGasStationFuel == null || !CompareFuels(tempGasStationFuel, userFuel))
+                if (tempGasStationFuel == null || !CompareFuels(tempGasStationFuel, userFuel))
                 {
                     continue;
                 }
@@ -79,7 +79,7 @@ namespace GasStationBot.Infrastructure.Services
         //return false - if have updates
         private bool CompareFuels(Fuel gasStationFuel, Fuel userFuel)
         {
-            if(gasStationFuel.StateOfFuel.Count != userFuel.StateOfFuel.Count)
+            if (gasStationFuel.StateOfFuel.Count != userFuel.StateOfFuel.Count)
             {
                 return false;
             }

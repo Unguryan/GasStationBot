@@ -19,6 +19,11 @@ namespace GasStationBot.Infrastructure.Services
             return await _context.Users.Include(u => u.GasStations).ToListAsync();
         }
 
+        public async Task<User> GetUserById(string id)
+        {
+            return await _context.Users.Include(u => u.GasStations).SingleOrDefaultAsync(u => u.Id == id);
+        }
+
         public async Task<bool> AddUser(User user)
         {
             var tempUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
@@ -35,7 +40,7 @@ namespace GasStationBot.Infrastructure.Services
         public async Task<bool> AddGasStationToUser(string userId, GasStation station)
         {
             var user = await _context.Users.Include(u => u.GasStations).FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null || 
+            if (user == null ||
                 user.GasStations == null ||
                 user.GasStations.Any(g => g.Equals(station)))
             {

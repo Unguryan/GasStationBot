@@ -19,7 +19,7 @@ namespace GasStationBot.Infrastructure.DB
             modelBuilder.Entity<User>().Property(u => u.GasStations)
                 .HasConversion(
                     gs => JsonConvert.SerializeObject(gs),
-                    gs => JsonConvert.DeserializeObject<List<UserGasStation>>(gs));
+                    gs => JsonConvert.DeserializeObject<List<GasStation>>(gs));
         }
     }
 }
