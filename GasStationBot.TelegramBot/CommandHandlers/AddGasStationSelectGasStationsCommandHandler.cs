@@ -23,9 +23,9 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userStateService = userStateService;
         }
 
-        protected override string Message => GetCustomMessage();
+        protected override Task<string> Message => GetCustomMessage();
 
-        protected override IReplyMarkup Keyboard => GetCustomKeyboard();
+        protected override Task<IReplyMarkup> Keyboard => GetCustomKeyboard();
 
         protected override async Task<UserState> HandleCommand()
         {
@@ -51,7 +51,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             await SendMessage(Command.UserId, "АЗС з таким ІД не знайдено, спробуйте ще.");
 
-            await SendMessage(Command.UserId, Message, Keyboard);
+            await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
@@ -69,7 +69,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             return true;
         }
 
-        private string GetCustomMessage()
+        private async Task<string> GetCustomMessage()
         {
             var sb = new StringBuilder();
             sb.AppendLine("Введіть ІД АЗС (або оберіть на клавіатурі): ");
@@ -85,7 +85,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             return sb.ToString();
         }
 
-        private IReplyMarkup GetCustomKeyboard()
+        private async Task<IReplyMarkup> GetCustomKeyboard()
         {
             var tempData = _userStateService.GetUserTempData(Command.UserId);
 

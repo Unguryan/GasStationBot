@@ -25,9 +25,9 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userService = userService;
         }
 
-        protected override string Message => GetCustomMessage();
+        protected override Task<string> Message => GetCustomMessage();
 
-        protected override IReplyMarkup Keyboard => GetCustomKeyboard();
+        protected override Task<IReplyMarkup> Keyboard => GetCustomKeyboard();
 
         protected override async Task<UserState> HandleCommand()
         {
@@ -44,31 +44,31 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 return UserState.RemoveGasStation_ListGasStations;
             }
 
-            if (Command.UserMessage == "Видалити АЗС" && CheckGasStation(out GasStation gasStation))
+            var result = await CheckGasStation();
+            if (Command.UserMessage == "Видалити АЗС" && result.Item1)
             {
-                var res = await _userService.RemoveGasStationFromUser(Command.UserId, gasStation);
+                var res = await _userService.RemoveGasStationFromUser(Command.UserId, result.Item2);
                 _userStateService.ClearTempData(Command.UserId);
                 var message = res ? "АЗС видалена" : "Помилка. АЗС не видалена. Повертаю до головного меню.";
                 return Command.NextState!.Value;
             }
 
             await SendMessage(Command.UserId, "Помилка, такої команди нема, спробуйте ще.");
-            await SendMessage(Command.UserId, Message, Keyboard);
+            await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
-        private bool CheckGasStation(out GasStation gasStation)
+        private async Task<Tuple<bool, GasStation>> CheckGasStation()
         {
             var tempData = _userStateService.GetUserTempData(Command.UserId);
 
             if (tempData == null ||
                 tempData.SelectedGasStation == null)
             {
-                gasStation = null;
-                return false;
+                return new Tuple<bool, GasStation>(false, null);
             }
 
-            gasStation = new GasStation()
+            var gasStation = new GasStation()
             {
                 Provider = tempData.SelectedGasStation.Provider,
                 Address = tempData.SelectedGasStation.Address,
@@ -77,10 +77,10 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             };
 
             gasStation.Fuels.AddRange(tempData.SelectedGasStation.Fuels);
-            return true;
+            return new Tuple<bool, GasStation>(true, gasStation);
         }
 
-        private string GetCustomMessage()
+        private Task<string> GetCustomMessage()
         {
             var tempData = _userStateService.GetUserTempData(Command.UserId);
             var sb = new StringBuilder();
@@ -98,10 +98,10 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             sb.AppendLine("Якщо усе ок, обирайте (на клавіатурі) \"Видалити АЗС\"\n");
 
-            return sb.ToString();
+            return Task.FromResult(sb.ToString());
         }
 
-        private IReplyMarkup GetCustomKeyboard()
+        private async Task<IReplyMarkup> GetCustomKeyboard()
         {
             var keyboard = new List<KeyboardButton[]>();
             keyboard.Add(new KeyboardButton[] { "Видалити АЗС" });

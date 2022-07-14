@@ -83,7 +83,7 @@ namespace GasStationBot.TelegramBot.Core
             }
 
             //Check more priority command from telegram,
-            var parseResult = _commandFactory.TryToCreateCommandByTelegramCommand(userMessage, userId);
+            var parseResult = _commandFactory.TryToCreateCommandByTelegramCommand(userId, userMessage);
             if (parseResult != null)
             {
                 updatedUserState = await _mediator.Send(parseResult);
@@ -91,7 +91,7 @@ namespace GasStationBot.TelegramBot.Core
             }
             else
             {
-                parseResult = _commandFactory.TryToCreateCommandByUserState(userState.Value, userMessage, userId);
+                parseResult = _commandFactory.TryToCreateCommandByUserState(userState.Value, userId, userMessage);
                 if (parseResult == null)
                 {
                     throw new ArgumentException("Command does not exist.");

@@ -22,9 +22,9 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userStateService = userStateService;
         }
 
-        protected override string Message => "Введіть місто (або оберіть на клавіатурі), де потрібно шукати АЗС: ";
+        protected override Task<string> Message => Task.FromResult("Введіть місто (або оберіть на клавіатурі), де потрібно шукати АЗС: ");
 
-        protected override IReplyMarkup Keyboard => GetCustomKeyboard();
+        protected override Task<IReplyMarkup> Keyboard => GetCustomKeyboard();
 
         protected override async Task<UserState> HandleCommand()
         {
@@ -43,7 +43,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             await SendMessage(Command.UserId, "Місто не знайдено, спробуйте ще.");
 
-            await SendMessage(Command.UserId, Message, Keyboard);
+            await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
@@ -63,7 +63,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             return cities.Any(c => c == Command.UserMessage);
         }
 
-        private IReplyMarkup GetCustomKeyboard()
+        private async Task<IReplyMarkup> GetCustomKeyboard()
         {
             var tempData = _userStateService.GetUserTempData(Command.UserId);
 

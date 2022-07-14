@@ -6,7 +6,7 @@ namespace GasStationBot.TelegramBot.Core
 {
     public class TelegramCommandFactory : ITelegramCommandFactory
     {
-        public ITelegramCommand? TryToCreateCommandByTelegramCommand(string userMessage, string userId)
+        public ITelegramCommand? TryToCreateCommandByTelegramCommand(string userId, string userMessage)
         {
             return userMessage switch
             {

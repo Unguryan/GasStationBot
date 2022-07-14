@@ -1,6 +1,7 @@
 ﻿using GasStationBot.Application.Services.Telegram;
 using GasStationBot.Domain.Entities;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -15,9 +16,9 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _botClient = botClient;
         }
 
-        protected abstract string Message { get; }
+        protected abstract Task<string> Message { get; }
 
-        protected abstract IReplyMarkup Keyboard { get; }
+        protected abstract Task<IReplyMarkup> Keyboard { get; }
 
         protected abstract Task<UserState> HandleCommand();
 
@@ -31,7 +32,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             if (string.IsNullOrEmpty(Command.UserMessage))
             {
-                await SendMessage(Command.UserId, Message, Keyboard);
+                await SendMessage(Command.UserId, await Message, await Keyboard);
                 //return command.NextState!.Value;
                 return Command.UserState;
             }
@@ -46,6 +47,10 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             try
             {
                 await _botClient.SendTextMessageAsync(new ChatId(long.Parse(userId)), message, replyMarkup: keyboard);
+            }
+            catch(ApiRequestException e)
+            {
+                return false;
             }
             catch
             {

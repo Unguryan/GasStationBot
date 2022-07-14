@@ -16,19 +16,24 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userStateService = userStateService;
         }
 
-        protected override string Message => "Головне меню:";
+        protected override Task<string> Message => Task.FromResult("Головне меню:");
 
-        protected override IReplyMarkup Keyboard => new ReplyKeyboardMarkup(
-                    new[]
-                    {
-                        new KeyboardButton[] { "Ваші підписки", },
-                        new KeyboardButton[] { "Додати підписку", },
-                        new KeyboardButton[] { "Видалити підписку", },
-                        new KeyboardButton[] { "Про бота", },
-                    })
+        protected override Task<IReplyMarkup> Keyboard => GetCustomKeyboard();
+
+        private async Task<IReplyMarkup> GetCustomKeyboard()
         {
-            ResizeKeyboard = true
-        };
+            return new ReplyKeyboardMarkup(
+               new[]
+               {
+                   new KeyboardButton[] { "Ваші підписки", },
+                   new KeyboardButton[] { "Додати підписку", },
+                   new KeyboardButton[] { "Видалити підписку", },
+                   new KeyboardButton[] { "Про бота", },
+               })
+            {
+                ResizeKeyboard = true
+            };
+        }
 
         protected override async Task<UserState> HandleCommand()
         {
@@ -42,13 +47,13 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 _ => Command.UserState
             };
 
-            if(state == Command.UserState)
+            if (state == Command.UserState)
             {
-                await SendMessage(Command.UserId, Message, Keyboard);
+                await SendMessage(Command.UserId, await Message, await Keyboard);
                 return state;
             }
 
-            return Command.NextState!.Value;
+            return state;
         }
     }
 }

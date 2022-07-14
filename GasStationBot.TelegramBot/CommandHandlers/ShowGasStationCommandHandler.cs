@@ -17,22 +17,19 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userService = userService;
         }
 
-        protected override string Message => GetCustomMessage();
+        protected override Task<string> Message => GetCustomMessage();
 
-        protected override IReplyMarkup Keyboard => null;
+        protected override Task<IReplyMarkup> Keyboard => null;
 
         protected override async Task<UserState> HandleCommand()
         {
-            await SendMessage(Command.UserId, Message);
+            await SendMessage(Command.UserId, await Message);
             return Command.NextState!.Value;
         }
 
-        private string GetCustomMessage()
+        private async Task<string> GetCustomMessage()
         {
-            //TODO: Fix it
-            var userTask = _userService.GetUserById(Command.UserId);
-            userTask.Wait();
-            var user = userTask.Result;
+            var user = await _userService.GetUserById(Command.UserId);
 
             if (user.GasStations == null ||
                !user.GasStations.Any())

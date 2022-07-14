@@ -4,7 +4,7 @@ namespace GasStationBot.Application.Services.Telegram
 {
     public interface ITelegramCommandFactory
     {
-        ITelegramCommand? TryToCreateCommandByTelegramCommand(string userMessage, string userId);
+        ITelegramCommand? TryToCreateCommandByTelegramCommand(string userId, string userMessage);
 
         ITelegramCommand? TryToCreateCommandByUserState(UserState userState, string userId, string userMessage);
 
