@@ -8,6 +8,8 @@ namespace GasStationBot.TelegramBot.Commands
         {
         }
 
+        public override bool IsMessageOnly => true;
+
         public override UserState UserState => UserState.ShowGasStation;
 
         public override UserState? NextState => UserState.None;

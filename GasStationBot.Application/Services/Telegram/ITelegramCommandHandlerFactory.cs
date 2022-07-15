@@ -2,7 +2,7 @@
 {
     public interface ITelegramCommandHandlerFactory
     {
-        ITelegramCommandHandler CreateHandler<T>(T telegramCommand) where T : ITelegramCommand;
+        ITelegramCommandHandler CreateHandler<T>(T telegramCommand, IUserService userService) where T : ITelegramCommand;
         //ITelegramCommandHandler<T> CreateHandler<T>(T telegramCommand) where T : ITelegramCommand;
     }
 }

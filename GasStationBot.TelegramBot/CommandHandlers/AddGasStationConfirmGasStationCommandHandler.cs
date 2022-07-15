@@ -9,18 +9,14 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GasStationBot.TelegramBot.CommandHandlers
 {
-    public class AddGasStationConfirmGasStationCommandHandler : BaseTelegramCommandHandler<AddGasStationConfirmGasStationCommand>
+    public class AddGasStationConfirmGasStationCommandHandler : BaseTelegramCommandHandlerWithContext<AddGasStationConfirmGasStationCommand>
     {
-
-        private readonly IUserService _userService;
 
         private readonly ITelegramUserStateService _userStateService;
 
         public AddGasStationConfirmGasStationCommandHandler(ITelegramBotClient botClient,
-                                                            IUserService userService,
                                                             ITelegramUserStateService userStateService) : base(botClient)
         {
-            _userService = userService;
             _userStateService = userStateService;
         }
 
@@ -52,13 +48,13 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             if (Command.UserMessage == "Додати АЗС" && CheckGasStation(out GasStation gasStation))
             {
-                await _userService.AddGasStationToUser(Command.UserId, gasStation);
+                await UserService.AddGasStationToUser(Command.UserId, gasStation);
                 _userStateService.ClearTempData(Command.UserId);
                 return Command.NextState!.Value;
             }
 
             await SendMessage(Command.UserId, "Помилка, такої команди нема, спробуйте ще.");
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
@@ -103,6 +99,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 sb.Append($"{fuel.FuelType.GetDescription()}  ");
             }
 
+            sb.AppendLine();
             sb.AppendLine("Якщо усе ок, обирайте (на клавіатурі) \"Додати АЗС\"\n");
 
             return sb.ToString();

@@ -6,6 +6,8 @@
         StartMenu, //Start 
         About, //About 
         ShowGasStation,
+        
+        //TextMessage,
 
         //Add GasStation
         AddGasStation_SelectProvider,

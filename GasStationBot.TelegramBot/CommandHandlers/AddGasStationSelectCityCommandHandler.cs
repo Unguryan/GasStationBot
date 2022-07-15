@@ -43,7 +43,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             await SendMessage(Command.UserId, "Місто не знайдено, спробуйте ще.");
 
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
@@ -72,15 +72,17 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var gsService = _gasStationsServices.SingleOrDefault(u => u.GasStationName == tempData.ProviderName);
             if (gsService != null)
             {
-                //TODO: Fix Issue with .Result
-                var citiesTask = gsService.GetGasStationsWithoutAdditionalData();
-                citiesTask.Wait();
-                var cities = citiesTask.Result.Select(gs => gs.City).Distinct().ToList();
+                var cities = (await gsService.GetGasStationsWithoutAdditionalData())
+                    .Select(gs => gs.City)
+                    .Distinct()
+                    .Where(city => !string.IsNullOrEmpty(city))
+                    .OrderBy(city => city)
+                    .ToList();
 
                 for (int i = 0; i < cities.Count(); i += 3)
                 {
-                    var subKeyboard = new KeyboardButton[3];
                     var subList = cities.GetRange(i, Math.Min(3, cities.Count() - i));
+                    var subKeyboard = new KeyboardButton[subList.Count];
                     for (int j = 0; j < subList.Count; j++)
                     {
                         subKeyboard[j] = new KeyboardButton(subList[j]);

@@ -8,18 +8,15 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GasStationBot.TelegramBot.CommandHandlers
 {
-    public class ShowGasStationCommandHandler : BaseTelegramCommandHandler<ShowGasStationCommand>
+    public class ShowGasStationCommandHandler : BaseTelegramCommandHandlerWithContext<ShowGasStationCommand>
     {
-        private readonly IUserService _userService;
-
-        public ShowGasStationCommandHandler(ITelegramBotClient botClient, IUserService userService) : base(botClient)
+        public ShowGasStationCommandHandler(ITelegramBotClient botClient) : base(botClient)
         {
-            _userService = userService;
         }
 
         protected override Task<string> Message => GetCustomMessage();
 
-        protected override Task<IReplyMarkup> Keyboard => null;
+        protected override Task<IReplyMarkup> Keyboard => Task.FromResult<IReplyMarkup>(null);
 
         protected override async Task<UserState> HandleCommand()
         {
@@ -29,7 +26,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
         private async Task<string> GetCustomMessage()
         {
-            var user = await _userService.GetUserById(Command.UserId);
+            var user = await UserService.GetUserById(Command.UserId);
 
             if (user.GasStations == null ||
                !user.GasStations.Any())
@@ -49,14 +46,20 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 sb.AppendLine($"Адреса: {gs.Address}");
 
                 var sbFuel = new StringBuilder();
-                sbFuel.Append($"Паливо (яке відстежується): ");
+                sbFuel.AppendLine($"Паливо (яке відстежується): ");
                 for (int i = 0; i < gs.Fuels.Count; i++)
                 {
-                    sbFuel.Append(gs.Fuels[i].FuelType.GetDescription());
-                    if (i != gs.Fuels.Count - 1)
+                    var sbState = new StringBuilder();
+                    sbFuel.Append(gs.Fuels[i].FuelType.GetDescription() + " - ");
+                    for (int j = 0; j < gs.Fuels[i].StateOfFuel.Count; j++)
                     {
-                        sbFuel.Append(", ");
+                        sbState.Append(gs.Fuels[i].StateOfFuel[j].GetDescription());
+                        if (j != gs.Fuels[i].StateOfFuel.Count - 1)
+                        {
+                            sbState.Append(", ");
+                        }
                     }
+                    sbFuel.Append(sbState.ToString() + "\n");
                 }
 
                 sb.AppendLine(sbFuel.ToString());

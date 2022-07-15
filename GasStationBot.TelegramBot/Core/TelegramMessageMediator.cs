@@ -1,4 +1,5 @@
-﻿using GasStationBot.Application.Services.Telegram;
+﻿using GasStationBot.Application.Services;
+using GasStationBot.Application.Services.Telegram;
 using GasStationBot.Domain.Entities;
 
 namespace GasStationBot.TelegramBot.Core
@@ -8,15 +9,22 @@ namespace GasStationBot.TelegramBot.Core
 
         private readonly ITelegramCommandHandlerFactory _handlerFactory;
 
+        private IUserService _userService;
+
         public TelegramMessageMediator(ITelegramCommandHandlerFactory handlerFactory)
         {
             _handlerFactory = handlerFactory;
         }
 
+        public void InjectUserService(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         public async Task<UserState> Send<T>(T telegramCommand)
             where T : ITelegramCommand
         {
-            var handler = _handlerFactory.CreateHandler(telegramCommand);
+            var handler = _handlerFactory.CreateHandler(telegramCommand, _userService);
 
             if (handler == null)
             {
@@ -27,6 +35,5 @@ namespace GasStationBot.TelegramBot.Core
 
             return updatedState;
         }
-
     }
 }

@@ -69,6 +69,7 @@ namespace GasStationBot.Infrastructure.Services
             }
 
             user.GasStations.Add(gasStation);
+            _context.Update(user);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -89,6 +90,7 @@ namespace GasStationBot.Infrastructure.Services
                                                            && g.Address == gasStation.Address
                                                            && g.Provider == gasStation.Provider);
             user.GasStations.Remove(stationToRemove);
+            _context.Update(user);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -110,8 +112,19 @@ namespace GasStationBot.Infrastructure.Services
                                                            && g.Address == gasStation.Address
                                                            && g.Provider == gasStation.Provider);
 
-            stationToUpdate.Fuels.Clear();
-            fuels.ForEach(f => stationToUpdate.Fuels.Add(f));
+            foreach (var fuel in stationToUpdate.Fuels)
+            {
+                var tempFuel = fuels.SingleOrDefault(f => f.FuelType == fuel.FuelType);
+                if(tempFuel != null)
+                {
+                    fuel.StateOfFuel.Clear();
+                    tempFuel.StateOfFuel.ForEach(fs => fuel.StateOfFuel.Add(fs));
+                }
+            }
+
+            //stationToUpdate.Fuels.Clear();
+            //fuels.ForEach(f => stationToUpdate.Fuels.Add(f));
+            _context.Update(user);
             await _context.SaveChangesAsync();
             return true;
         }

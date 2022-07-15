@@ -47,7 +47,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             await SendMessage(Command.UserId, "АЗС не знайдена, спробуйте ще.");
 
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 

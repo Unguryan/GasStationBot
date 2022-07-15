@@ -29,6 +29,8 @@ namespace GasStationBot.TelegramBot.Core
             _userStateService = userStateService;
             _userService = userService;
             _commandFactory = commandFactory;
+
+            _mediator.InjectUserService(_userService);
             //_botClient = botClient;
         }
 
@@ -87,7 +89,10 @@ namespace GasStationBot.TelegramBot.Core
             if (parseResult != null)
             {
                 updatedUserState = await _mediator.Send(parseResult);
-                _userStateService.SetUserState(userId, updatedUserState.Value);
+                //if (!parseResult.IsMessageOnly)
+                //{
+                //    _userStateService.SetUserState(userId, updatedUserState.Value);
+                //}
             }
             else
             {
@@ -98,12 +103,34 @@ namespace GasStationBot.TelegramBot.Core
                 }
 
                 updatedUserState = await _mediator.Send(parseResult);
+                //if (!parseResult.IsMessageOnly)
+                //{
+                //    _userStateService.SetUserState(userId, updatedUserState.Value);
+                //}
+                
+            }
+
+            //if (!parseResult.IsMessageOnly)
+            //{
+            //    var nextCommand = _commandFactory.TryToCreateEmptyCommandByUserState(updatedUserState.Value, userId);
+            //    await _mediator.Send(nextCommand);
+            //}
+            //else
+            //{
+            //    var nextCommand = _commandFactory.TryToCreateEmptyCommandByUserState(updatedUserState.Value, userId);
+            //    await _mediator.Send(nextCommand);
+            //}
+
+            var nextCommand = _commandFactory.TryToCreateEmptyCommandByUserState(updatedUserState.Value, userId);
+            await _mediator.Send(nextCommand);
+
+            if (!nextCommand.IsMessageOnly)
+            {
                 _userStateService.SetUserState(userId, updatedUserState.Value);
             }
 
             //TODO:Add null check
-            var nextCommand = _commandFactory.TryToCreateEmptyCommandByUserState(updatedUserState.Value, userId);
-            await _mediator.Send(nextCommand);
+
 
             //1.Get User State
             //2.Parse Message by command "/start"
@@ -116,8 +143,6 @@ namespace GasStationBot.TelegramBot.Core
             // "/start" - Send Start
             // "/about" - Send About
             // "/menu" - Send Base Menu
-
-
         }
 
         private async Task CheckOrAddUser(string userId, string firstName)

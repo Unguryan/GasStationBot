@@ -13,7 +13,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
         protected override Task<string> Message => Task.FromResult("Добрий День!\nЦе телеграм бот, який потрібен для відстеження явності пального в Україні.");
 
-        protected override Task<IReplyMarkup> Keyboard => null;
+        protected override Task<IReplyMarkup> Keyboard => Task.FromResult<IReplyMarkup>(null);
 
         protected override async Task<UserState> HandleCommand()
         {

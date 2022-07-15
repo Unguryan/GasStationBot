@@ -10,19 +10,15 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GasStationBot.TelegramBot.CommandHandlers
 {
-    public class RemoveGasStationRemoveGasStationsCommandHandler : BaseTelegramCommandHandler<RemoveGasStationRemoveGasStationsCommand>
+    public class RemoveGasStationRemoveGasStationsCommandHandler : BaseTelegramCommandHandlerWithContext<RemoveGasStationRemoveGasStationsCommand>
     {
 
         private readonly ITelegramUserStateService _userStateService;
 
-        private readonly IUserService _userService;
-
         public RemoveGasStationRemoveGasStationsCommandHandler(ITelegramBotClient botClient,
-                                                               ITelegramUserStateService userStateService,
-                                                               IUserService userService) : base(botClient)
+                                                               ITelegramUserStateService userStateService) : base(botClient)
         {
             _userStateService = userStateService;
-            _userService = userService;
         }
 
         protected override Task<string> Message => GetCustomMessage();
@@ -47,14 +43,14 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var result = await CheckGasStation();
             if (Command.UserMessage == "Видалити АЗС" && result.Item1)
             {
-                var res = await _userService.RemoveGasStationFromUser(Command.UserId, result.Item2);
+                var res = await UserService.RemoveGasStationFromUser(Command.UserId, result.Item2);
                 _userStateService.ClearTempData(Command.UserId);
                 var message = res ? "АЗС видалена" : "Помилка. АЗС не видалена. Повертаю до головного меню.";
                 return Command.NextState!.Value;
             }
 
             await SendMessage(Command.UserId, "Помилка, такої команди нема, спробуйте ще.");
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
@@ -91,11 +87,12 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             sb.AppendLine($"Адреса: {tempData.SelectedGasStation.Address}");
 
             sb.AppendLine("Обране паливо:");
-            foreach (var fuel in tempData.SelectedFuels)
+            foreach (var fuel in tempData.SelectedGasStation.Fuels)
             {
                 sb.Append($"{fuel.FuelType.GetDescription()}  ");
             }
 
+            sb.AppendLine();
             sb.AppendLine("Якщо усе ок, обирайте (на клавіатурі) \"Видалити АЗС\"\n");
 
             return Task.FromResult(sb.ToString());

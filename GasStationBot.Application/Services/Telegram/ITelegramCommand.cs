@@ -6,13 +6,16 @@ namespace GasStationBot.Application.Services.Telegram
     {
         string UserId { get; }
 
+        string UserMessage { get; }
+
+        bool IsMessageOnly { get; }
+
         UserState UserState { get; }
 
         //IReplyMarkup? Keyboard { get; }
 
         UserState? NextState { get; }
 
-        string UserMessage { get; }
 
     }
 }

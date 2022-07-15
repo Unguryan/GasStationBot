@@ -89,7 +89,7 @@ namespace GasStationBot.Infrastructure.Services
             {
                 var sbFuelState = new StringBuilder();
 
-                sbFuelState.Append($"Паливо {fuel.FuelType} - ");
+                sbFuelState.Append($"Паливо {fuel.FuelType.GetDescription()} - ");
                 for (int i = 0; i < fuel.StateOfFuel.Count; i++)
                 {
                     sbFuelState.Append($"{fuel.StateOfFuel[i].GetDescription()}");
@@ -111,7 +111,7 @@ namespace GasStationBot.Infrastructure.Services
             foreach (var userFuel in userGasStation.Fuels)
             {
                 var tempGasStationFuel = gasStation.Fuels.FirstOrDefault(f => f.FuelType == userFuel.FuelType);
-                if (tempGasStationFuel == null || !CompareFuels(tempGasStationFuel, userFuel))
+                if (tempGasStationFuel == null || CompareFuels(tempGasStationFuel, userFuel))
                 {
                     continue;
                 }
@@ -131,6 +131,7 @@ namespace GasStationBot.Infrastructure.Services
                 return false;
             }
 
+            //TODO: Refactor it
             var result = true;
             foreach (var state in userFuel.StateOfFuel)
             {

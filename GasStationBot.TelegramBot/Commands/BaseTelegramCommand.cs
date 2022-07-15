@@ -16,6 +16,8 @@ namespace GasStationBot.TelegramBot.Commands
 
         public string UserMessage { get; }
 
+        public virtual bool IsMessageOnly => false;
+
         public abstract UserState UserState { get; }
 
         public abstract UserState? NextState { get; }

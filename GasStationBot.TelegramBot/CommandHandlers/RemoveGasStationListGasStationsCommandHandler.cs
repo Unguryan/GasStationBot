@@ -10,19 +10,15 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GasStationBot.TelegramBot.CommandHandlers
 {
-    public class RemoveGasStationListGasStationsCommandHandler : BaseTelegramCommandHandler<RemoveGasStationListGasStationsCommand>
+    public class RemoveGasStationListGasStationsCommandHandler : BaseTelegramCommandHandlerWithContext<RemoveGasStationListGasStationsCommand>
     {
 
         private readonly ITelegramUserStateService _userStateService;
         
-        private readonly IUserService _userService;
-
         public RemoveGasStationListGasStationsCommandHandler(ITelegramBotClient botClient,
-                                                             ITelegramUserStateService userStateService,
-                                                             IUserService userService) : base(botClient)
+                                                             ITelegramUserStateService userStateService) : base(botClient)
         {
             _userStateService = userStateService;
-            _userService = userService;
         }
 
         protected override Task<string> Message => GetCustomMessage();
@@ -36,7 +32,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 return UserState.None;
             }
 
-            var user = await _userService.GetUserById(Command.UserId);
+            var user = await UserService.GetUserById(Command.UserId);
             
             if(user.GasStations == null || !user.GasStations.Any())
             {
@@ -55,13 +51,13 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             }
 
             await SendMessage(Command.UserId, "АЗС з таким ІД не знайдено, спробуйте ще.");
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
         private async Task<Tuple<bool, GasStation>> CheckID(int gasStationId)
         {
-            var user = await _userService.GetUserById(Command.UserId);
+            var user = await UserService.GetUserById(Command.UserId);
 
             if (gasStationId <= 0 || gasStationId > user.GasStations.Count)
             {
@@ -75,7 +71,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
         private async Task<string> GetCustomMessage()
         {
             //TODO: Fix it
-            var user = await _userService.GetUserById(Command.UserId);
+            var user = await UserService.GetUserById(Command.UserId);
 
             if (user.GasStations == null ||
                !user.GasStations.Any())
@@ -110,7 +106,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
         private async Task<IReplyMarkup> GetCustomKeyboard()
         {
-            var user = await _userService.GetUserById(Command.UserId);
+            var user = await UserService.GetUserById(Command.UserId);
             var gasStations = user.GasStations.Select(g => g.Address).ToList();
 
             var keyboard = new List<KeyboardButton[]>();
@@ -119,8 +115,8 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var counter = 1;
             for (int i = 0; i < gasStations.Count(); i += 4)
             {
-                var subKeyboard = new KeyboardButton[4];
                 var subList = gasStations.GetRange(i, Math.Min(4, gasStations.Count() - i));
+                var subKeyboard = new KeyboardButton[subList.Count];
                 for (int j = 0; j < subList.Count; j++)
                 {
                     subKeyboard[j] = new KeyboardButton((counter++).ToString());

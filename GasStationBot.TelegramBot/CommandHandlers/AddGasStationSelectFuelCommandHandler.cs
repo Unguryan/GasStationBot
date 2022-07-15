@@ -78,13 +78,15 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             }
 
             await SendMessage(Command.UserId, "Пальне не знайдено або вже додано, спробуйте ще.");
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
         private void ClearSelectedFuel()
         {
-            throw new NotImplementedException();
+            var tempData = _userStateService.GetUserTempData(Command.UserId);
+            tempData.SelectedFuels = new List<Fuel>();
+            _userStateService.SetUserTempData(Command.UserId, tempData);
         }
 
         private bool CheckNewFuel(out Fuel fuel)
@@ -144,12 +146,12 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var keyboard = new List<KeyboardButton[]>();
             keyboard.Add(new KeyboardButton[] { "До головної" });
 
-            if(tempData.SelectedFuels != null || tempData.SelectedFuels.Any())
+            if(tempData.SelectedFuels != null && tempData.SelectedFuels.Any())
             {
                 keyboard.Add(new KeyboardButton[] { "Підтвердити", "Скинути обране" });
             }
 
-            if (tempData.SelectedGasStation == null)
+            if (tempData.SelectedGasStation != null)
             {
                 if(tempData.SelectedFuels == null)
                 {
@@ -167,8 +169,8 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
                 for (int i = 0; i < availableFuel.Count(); i += 2)
                 {
-                    var subKeyboard = new KeyboardButton[2];
                     var subList = availableFuel.GetRange(i, Math.Min(2, availableFuel.Count() - i));
+                    var subKeyboard = new KeyboardButton[subList.Count];
                     for (int j = 0; j < subList.Count; j++)
                     {
                         subKeyboard[j] = new KeyboardButton(subList[j].FuelType.GetDescription());

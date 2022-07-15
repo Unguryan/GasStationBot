@@ -1,4 +1,5 @@
-﻿using GasStationBot.Application.Services.Telegram;
+﻿using GasStationBot.Application.Services;
+using GasStationBot.Application.Services.Telegram;
 using GasStationBot.TelegramBot.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,11 +14,11 @@ namespace GasStationBot.TelegramBot.Core
             _services = services;
         }
 
-        public ITelegramCommandHandler CreateHandler<T>(T telegramCommand) where T : ITelegramCommand
+        public ITelegramCommandHandler CreateHandler<T>(T telegramCommand, IUserService userService) where T : ITelegramCommand
         {
             using(var scope = _services.CreateScope())
             {
-                return telegramCommand switch
+                ITelegramCommandHandler handler = telegramCommand switch
                 {
                     StartMenuCommand => scope.ServiceProvider.GetService<ITelegramCommandHandler<StartMenuCommand>>()!,
                     NoneMenuCommand => scope.ServiceProvider.GetService<ITelegramCommandHandler<NoneMenuCommand>>()!,
@@ -35,6 +36,13 @@ namespace GasStationBot.TelegramBot.Core
 
                     _ => scope.ServiceProvider.GetService<ITelegramCommandHandler<NoneMenuCommand>>()!
                 };
+
+                if(handler is ITelegramCommandHandlerWithContext)
+                {
+                    ((ITelegramCommandHandlerWithContext)handler).InjectUserService(userService);
+                }
+
+                return handler;
             }
         }
     }

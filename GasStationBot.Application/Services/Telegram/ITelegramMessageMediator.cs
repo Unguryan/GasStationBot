@@ -5,5 +5,8 @@ namespace GasStationBot.Application.Services.Telegram
     public interface ITelegramMessageMediator
     {
         Task<UserState> Send<T>(T telegramCommand) where T : ITelegramCommand;
+
+        public void InjectUserService(IUserService userService);
+
     }
 }

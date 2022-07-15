@@ -45,13 +45,14 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             {
                 var tempData = _userStateService.GetUserTempData(Command.UserId);
                 tempData.SelectedGasStation = selectedGasStation;
+                tempData.SelectedFuels = new List<Fuel>();
                 _userStateService.SetUserTempData(Command.UserId, tempData);
                 return Command.NextState!.Value;
             }
 
             await SendMessage(Command.UserId, "АЗС з таким ІД не знайдено, спробуйте ще.");
 
-            await SendMessage(Command.UserId, await Message, await Keyboard);
+            //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
@@ -97,8 +98,8 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var id = 1;
             for (int i = 0; i < gasStations.Count(); i += 4)
             {
-                var subKeyboard = new KeyboardButton[4];
                 var subList = gasStations.GetRange(i, Math.Min(4, gasStations.Count() - i));
+                var subKeyboard = new KeyboardButton[subList.Count];
                 for (int j = 0; j < subList.Count; j++)
                 {
                     subKeyboard[j] = new KeyboardButton(id.ToString());
