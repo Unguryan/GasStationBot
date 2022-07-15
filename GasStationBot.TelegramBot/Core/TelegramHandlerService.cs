@@ -88,7 +88,14 @@ namespace GasStationBot.TelegramBot.Core
             var parseResult = _commandFactory.TryToCreateCommandByTelegramCommand(userId, userMessage);
             if (parseResult != null)
             {
-                updatedUserState = await _mediator.Send(parseResult);
+                var nextTelegramCommand = _commandFactory.TryToCreateEmptyCommandByUserState(parseResult.UserState, userId);
+                updatedUserState = await _mediator.Send(nextTelegramCommand);
+                if (!parseResult.IsMessageOnly)
+                {
+                    _userStateService.SetUserState(userId, updatedUserState.Value);
+                }
+                return;
+
                 //if (!parseResult.IsMessageOnly)
                 //{
                 //    _userStateService.SetUserState(userId, updatedUserState.Value);
