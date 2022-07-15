@@ -18,6 +18,7 @@ namespace GasStationBot.WebHook.Core
             _logger = logger;
             _services = serviceProvider;
             _botConfig = configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
+            _botConfig.BotToken = configuration["BotToken"];
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
