@@ -6,6 +6,7 @@ using Telegram.Bot;
 var builder = WebApplication.CreateBuilder(args);
 
 var botConfig = builder.Configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
+botConfig.BotToken = builder.Configuration["BotToken"];
 builder.Services.AddHostedService<ConfigureWebhook>();
 
 builder.Services.AddHttpClient("tgwebhook")
