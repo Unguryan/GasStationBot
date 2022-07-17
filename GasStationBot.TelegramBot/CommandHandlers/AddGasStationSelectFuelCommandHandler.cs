@@ -33,11 +33,11 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var tempData = _userStateService.GetUserTempData(Command.UserId);
             if (tempData.SelectedGasStation == null)
             {
-                await SendMessage(Command.UserId, "Помилка! АЗС не знайдена, спробуйте обрати знов.");
+                await SendMessage(Command.UserId, "❌Помилка! АЗС не знайдена, спробуйте обрати знов.❌");
                 return UserState.AddGasStation_SelectGasStations;
             }
 
-            if (Command.UserMessage == "Підтвердити" )
+            if (Command.UserMessage == "✅Підтвердити")
             {
                 if(tempData.SelectedFuels != null && tempData.SelectedFuels.Any())
                 {
@@ -45,12 +45,12 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 }
                 else
                 {
-                    await SendMessage(Command.UserId, "Помилка! Паливо не додано.");
+                    await SendMessage(Command.UserId, "❌Помилка! Паливо не додано.❌");
                     return Command.UserState;
                 }
             }
 
-            if (Command.UserMessage == "Скинути обране")
+            if (Command.UserMessage == "⬅️Скинути обране пальне")
             {
                 if (tempData.SelectedFuels != null && tempData.SelectedFuels.Any())
                 {
@@ -59,7 +59,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 }
                 else
                 {
-                    await SendMessage(Command.UserId, "Помилка! Паливо не додано.");
+                    await SendMessage(Command.UserId, "❌Помилка! Паливо не додано.❌");
                     return Command.UserState;
                 }
                 
@@ -77,7 +77,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 return Command.UserState;
             }
 
-            await SendMessage(Command.UserId, "Пальне не знайдено або вже додано, спробуйте ще.");
+            await SendMessage(Command.UserId, "❌Пальне не знайдено або вже додано, спробуйте ще.❌");
             //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
@@ -113,28 +113,28 @@ namespace GasStationBot.TelegramBot.CommandHandlers
         {
             var tempData = _userStateService.GetUserTempData(Command.UserId);
             var sb = new StringBuilder();
-            sb.AppendLine("Обране АЗС: ");
-            sb.AppendLine($"Адреса: {tempData.SelectedGasStation.Address}");
+            sb.AppendLine("<b>Обрана АЗС ⛽️</b>\n");
+            sb.AppendLine($"Адреса: <b>{tempData.SelectedGasStation.Address}</b>\n");
 
-            sb.AppendLine($"Доступне Пальне: ");
+            sb.AppendLine($"<b>Доступне пальне ✅:</b>");
             foreach (var fuel in tempData.SelectedGasStation!.Fuels)
             {
                 if (!tempData.SelectedFuels.Any(f => f.FuelType == fuel.FuelType))
                 {
-                    sb.Append($"{fuel.FuelType.GetDescription()}  ");
+                    sb.AppendLine($"📍{fuel.FuelType.GetDescription()}  ");
                     //availableFuel.Add(fuel);
                 }
             }
 
             sb.AppendLine();
-            sb.AppendLine($"Обране Пальне: ");
+            sb.AppendLine($"<b>Обране пальне:</b>");
             foreach (var fuel in tempData.SelectedFuels)
             {
-                sb.Append($"{fuel.FuelType.GetDescription()}  ");
+                sb.AppendLine($"📍{fuel.FuelType.GetDescription()}  ");
             }
 
             sb.AppendLine();
-            sb.AppendLine("Оберіть пальне (на клавіатурі), або натисніть \"Підтвердити\"");
+            sb.AppendLine("\n<b>Оберіть пальне</b> (на клавіатурі), або натисніть <b>\"✅Підтвердити\"</b>");
 
             return sb.ToString();
         }
@@ -148,7 +148,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
             if(tempData.SelectedFuels != null && tempData.SelectedFuels.Any())
             {
-                keyboard.Add(new KeyboardButton[] { "Підтвердити", "Скинути обране" });
+                keyboard.Add(new KeyboardButton[] { "✅Підтвердити", "⬅️Скинути обране пальне" });
             }
 
             if (tempData.SelectedGasStation != null)
@@ -179,27 +179,6 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                     keyboard.Add(subKeyboard);
                 }
             }
-            //var gsService = _gasStationsServices.SingleOrDefault(u => u.GasStationName == tempData.ProviderName);
-            //if (gsService != null)
-            //{
-            //    //TODO: Fix Issue with .Result
-            //    var citiesTask = gsService.GetGasStationsWithoutAdditionalData();
-            //    citiesTask.Wait();
-            //    var cities = citiesTask.Result.Select(gs => gs.City).Distinct().ToList();
-
-            //    for (int i = 0; i < cities.Count(); i += 3)
-            //    {
-            //        var subKeyboard = new KeyboardButton[3];
-            //        var subList = cities.GetRange(i, Math.Min(3, cities.Count() - i));
-            //        for (int j = 0; j < subList.Count; j++)
-            //        {
-            //            subKeyboard[j] = new KeyboardButton(subList[j]);
-            //        }
-
-            //        keyboard.Add(subKeyboard);
-            //    }
-            //}
-
 
             return new ReplyKeyboardMarkup(keyboard);
         }

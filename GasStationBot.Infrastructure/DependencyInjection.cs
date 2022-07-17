@@ -14,6 +14,7 @@ namespace GasStationBot.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddWogGasStation();
+            services.AddOkkoGasStation();
 
             services.AddDbContext<GasStationContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

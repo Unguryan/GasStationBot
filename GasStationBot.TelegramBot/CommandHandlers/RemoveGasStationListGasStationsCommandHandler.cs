@@ -36,7 +36,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             
             if(user.GasStations == null || !user.GasStations.Any())
             {
-                await SendMessage(Command.UserId, "Ви ще не додали жодної АЗС.");
+                await SendMessage(Command.UserId, "❌У вас ще нема підписок❌");
                 return UserState.None;
             }
 
@@ -50,7 +50,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 }
             }
 
-            await SendMessage(Command.UserId, "АЗС з таким ІД не знайдено, спробуйте ще.");
+            await SendMessage(Command.UserId, "❌АЗС з таким ІД не знайдено, спробуйте ще.❌");
             //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
@@ -76,30 +76,42 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             if (user.GasStations == null ||
                !user.GasStations.Any())
             {
-                return "У вас ще нема підписок";
+                return "❌У вас ще нема підписок❌";
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine("Ваші підписки: ");
+            sb.AppendLine("<b>Ваші підписки: </b>");
             sb.AppendLine();
             var counter = 1;
             foreach (var gs in user.GasStations)
             {
-                sb.AppendLine($"ІД: {counter++}");
-                sb.AppendLine($"Власник АЗС: {gs.Provider}");
-                sb.AppendLine($"Місто: {gs.City}");
-                sb.AppendLine($"Адреса: {gs.Address}");
+                sb.AppendLine($"✅ІД: {counter++}");
+                sb.AppendLine($"Власник АЗС: <b>{gs.Provider}</b>");
+                sb.AppendLine($"Місто: <b>{gs.City}</b>");
+                sb.AppendLine($"Адреса: <b>{gs.Address}</b>");
 
-                sb.AppendLine($"Обране Пальне (яке відстежується): ");
-                foreach (var fuel in gs.Fuels)
+                var sbFuel = new StringBuilder();
+                sbFuel.AppendLine($"\n<b>Пальне</b> (яке відстежується): ");
+                for (int i = 0; i < gs.Fuels.Count; i++)
                 {
-                    sb.Append($"{fuel.FuelType.GetDescription()}  ");
+                    var sbState = new StringBuilder();
+                    sbFuel.Append("<b>📍" + gs.Fuels[i].FuelType.GetDescription() + "</b> - ");
+                    for (int j = 0; j < gs.Fuels[i].StateOfFuel.Count; j++)
+                    {
+                        sbState.Append(gs.Fuels[i].StateOfFuel[j].GetDescription());
+                        if (j != gs.Fuels[i].StateOfFuel.Count - 1)
+                        {
+                            sbState.Append(", ");
+                        }
+                    }
+                    sbFuel.Append(sbState.ToString() + "\n");
                 }
+
+                sb.AppendLine(sbFuel.ToString());
 
                 sb.AppendLine();
             }
-
-            sb.AppendLine($"Оберіть ІД АЗС (на клавіатурі), Яке потрібно видалити:");
+            sb.AppendLine($"<b>Введіть ІД АЗС ✅⛽️</b>\n(або оберіть на клавіатурі)\nЯке потрібно <b>видалити:</b>");
 
             return sb.ToString();
         }

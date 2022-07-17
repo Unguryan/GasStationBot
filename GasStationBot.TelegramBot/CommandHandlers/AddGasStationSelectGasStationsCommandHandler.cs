@@ -8,7 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GasStationBot.TelegramBot.CommandHandlers
 {
-    public class AddGasStationSelectGasStationsCommandHandler : BaseTelegramCommandHandler<AddGasStationSelectGasStationsCommand>
+    public class AddGasStationSelectGasStationsCommandHandler : BaseTelegramCommandHandlerWithContext<AddGasStationSelectGasStationsCommand>
     {
 
         private readonly IEnumerable<IGasStationsService> _gasStationsServices;
@@ -34,52 +34,61 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 return UserState.None;
             }
 
-            if (!GetGasStationsBySelectedCity().Any())
+            var stations = await GetGasStationsBySelectedCity();
+            if (!stations.Any())
             {
-                await SendMessage(Command.UserId, "Доступних АЗС не знайдено або всі АЗС с цього міста вже додані.");
+                await SendMessage(Command.UserId, "❌Доступних АЗС не знайдено або всі АЗС с цього міста вже додані.❌");
                 return UserState.None;
             }
 
-            if (int.TryParse(Command.UserMessage, out int gasStationId) &&
-                CheckGasStationId(gasStationId, out GasStation selectedGasStation))
+            var verifyResult = int.TryParse(Command.UserMessage, out int gasStationId);
+
+            if (verifyResult)
             {
-                var tempData = _userStateService.GetUserTempData(Command.UserId);
-                tempData.SelectedGasStation = selectedGasStation;
-                tempData.SelectedFuels = new List<Fuel>();
-                _userStateService.SetUserTempData(Command.UserId, tempData);
-                return Command.NextState!.Value;
+                var res = await CheckGasStationId(gasStationId);
+                if (res.Item1)
+                {
+                    var tempData = _userStateService.GetUserTempData(Command.UserId);
+                    tempData.SelectedGasStation = res.Item2;
+                    tempData.SelectedFuels = new List<Fuel>();
+                    _userStateService.SetUserTempData(Command.UserId, tempData);
+                    return Command.NextState!.Value;
+                }
             }
 
-            await SendMessage(Command.UserId, "АЗС з таким ІД не знайдено, спробуйте ще.");
+            await SendMessage(Command.UserId, "❌АЗС з таким ІД не знайдено, спробуйте ще.❌");
 
             //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
 
-        private bool CheckGasStationId(int gasStationId, out GasStation selectedGasStation)
+        private async Task<Tuple<bool, GasStation>> CheckGasStationId(int gasStationId)
         {
-            var gasStations = GetGasStationsBySelectedCity();
+            var gasStations = await GetGasStationsBySelectedCity();
 
             if (gasStationId <= 0 || gasStationId > gasStations.Count)
             {
-                selectedGasStation = null;
-                return false;
+                return new Tuple<bool, GasStation>(false, null);
             }
 
-            selectedGasStation = gasStations[gasStationId - 1];
-            return true;
+            return new Tuple<bool, GasStation>(true, gasStations[gasStationId - 1]); ;
         }
 
         private async Task<string> GetCustomMessage()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Введіть ІД АЗС (або оберіть на клавіатурі): ");
+            sb.AppendLine("<b>Введіть ІД АЗС ✅⛽️</b>\n(або оберіть на клавіатурі): ");
 
-            var gasStations = GetGasStationsBySelectedCity();
+            var gasStations = await GetGasStationsBySelectedCity();
+
+            if (!gasStations.Any())
+            {
+                return "❌Доступних АЗС не знайдено або всі АЗС с цього міста вже додані.❌";
+            }
 
             for (int i = 0; i < gasStations.Count; i++)
             {
-                sb.AppendLine($"ІД: {i + 1}. Адреса: {gasStations[i].Address}");
+                sb.AppendLine($"<b>✅ІД: {i + 1}</b>\n Адреса: <b>{gasStations[i].Address}</b>\n");
                 sb.AppendLine();
             }
 
@@ -93,7 +102,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var keyboard = new List<KeyboardButton[]>();
             keyboard.Add(new KeyboardButton[] { "До головної" });
 
-            var gasStations = GetGasStationsBySelectedCity();
+            var gasStations = await GetGasStationsBySelectedCity();
 
             var id = 1;
             for (int i = 0; i < gasStations.Count(); i += 4)
@@ -115,18 +124,34 @@ namespace GasStationBot.TelegramBot.CommandHandlers
 
         //TODO: Move this method to service
         //TODO: Remove existing user GasStations, see avaliable GasStationForUser
-        private List<GasStation> GetGasStationsBySelectedCity()
+        private async Task<List<GasStation>> GetGasStationsBySelectedCity()
         {
             var tempData = _userStateService.GetUserTempData(Command.UserId);
             var gsService = _gasStationsServices.SingleOrDefault(u => u.GasStationName == tempData.ProviderName);
-            if (gsService == null)
+            var user = await UserService.GetUserById(Command.UserId);
+            if (gsService == null || user == null)
             {
                 return new List<GasStation>();
             }
 
-            var gasStationsTask = gsService.GetGasStationsWithoutAdditionalData();
-            gasStationsTask.Wait();
-            return gasStationsTask.Result.Where(gs => gs.City == tempData.City).ToList();
+            var gasStations = await gsService.GetGasStationsWithoutAdditionalData();
+            if (!user.GasStations.Any())
+            {
+                return gasStations.ToList();
+            }
+
+            var list = new List<GasStation>();
+            foreach (var gasStation in gasStations.Where(gs => gs.City == tempData.City))
+            {
+                if (!user.GasStations.Any(gs => gs.City == gasStation.City
+                                             && gs.Address == gasStation.Address
+                                             && gs.Provider == gasStation.Provider))
+                {
+                    list.Add(gasStation);
+                }
+            }
+
+            return list;
         }
     }
 }

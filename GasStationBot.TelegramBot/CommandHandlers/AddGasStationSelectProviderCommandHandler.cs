@@ -23,7 +23,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userStateService = userStateService;
         }
 
-        protected override Task<string> Message => Task.FromResult("Оберіть компанію АЗС(на клавіатурі): ");
+        protected override Task<string> Message => Task.FromResult("⬇️Оберіть <b>компанію АЗС</b>(на клавіатурі): ");
 
         protected override Task<IReplyMarkup> Keyboard => GetCustomKeyboard();
 
@@ -45,7 +45,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
                 return Command.NextState!.Value;
             }
 
-            await SendMessage(Command.UserId, "АЗС не знайдена, спробуйте ще.");
+            await SendMessage(Command.UserId, "❌АЗС не знайдена, спробуйте ще.❌");
 
             //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;

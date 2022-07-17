@@ -3,6 +3,7 @@ using GasStationBot.Domain.Entities;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace GasStationBot.TelegramBot.CommandHandlers
@@ -46,7 +47,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
         {
             try
             {
-                await _botClient.SendTextMessageAsync(new ChatId(long.Parse(userId)), message, replyMarkup: keyboard);
+                await _botClient.SendTextMessageAsync(new ChatId(long.Parse(userId)), message, replyMarkup: keyboard, parseMode: ParseMode.Html);
             }
             catch(ApiRequestException e)
             {

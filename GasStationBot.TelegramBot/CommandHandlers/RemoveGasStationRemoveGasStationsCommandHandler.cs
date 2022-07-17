@@ -36,20 +36,20 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             if (tempData == null ||
                 tempData.SelectedGasStation == null)
             {
-                await SendMessage(Command.UserId, "Помилка, АЗС не було обрано.");
+                await SendMessage(Command.UserId, "❌Помилка, АЗС не було обрано.❌");
                 return UserState.RemoveGasStation_ListGasStations;
             }
 
             var result = await CheckGasStation();
-            if (Command.UserMessage == "Видалити АЗС" && result.Item1)
+            if (Command.UserMessage == "✅Видалити АЗС" && result.Item1)
             {
                 var res = await UserService.RemoveGasStationFromUser(Command.UserId, result.Item2);
                 _userStateService.ClearTempData(Command.UserId);
-                var message = res ? "АЗС видалена" : "Помилка. АЗС не видалена. Повертаю до головного меню.";
+                var message = res ? "✅АЗС видалена" : "❌Помилка. АЗС не видалена. Повертаю до головного меню.❌";
                 return Command.NextState!.Value;
             }
 
-            await SendMessage(Command.UserId, "Помилка, такої команди нема, спробуйте ще.");
+            await SendMessage(Command.UserId, "❌Помилка, такої команди нема, спробуйте ще.❌");
             //await SendMessage(Command.UserId, await Message, await Keyboard);
             return Command.UserState;
         }
@@ -81,19 +81,19 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var tempData = _userStateService.GetUserTempData(Command.UserId);
             var sb = new StringBuilder();
 
-            sb.AppendLine("Обране АЗС:");
-            sb.AppendLine($"Власник АЗС: {tempData.SelectedGasStation.Provider}");
-            sb.AppendLine($"Місто: {tempData.SelectedGasStation.City}");
-            sb.AppendLine($"Адреса: {tempData.SelectedGasStation.Address}");
+            sb.AppendLine("<b>Обрана АЗС ✅⛽️</b>");
+            sb.AppendLine($"Власник АЗС: <b>{tempData.SelectedGasStation.Provider}</b>");
+            sb.AppendLine($"Місто: <b>{tempData.SelectedGasStation.City}</b>");
+            sb.AppendLine($"Адреса: <b>{tempData.SelectedGasStation.Address}</b>");
 
             sb.AppendLine("Обране паливо:");
             foreach (var fuel in tempData.SelectedGasStation.Fuels)
             {
-                sb.Append($"{fuel.FuelType.GetDescription()}  ");
+                sb.AppendLine($"<b>📍{fuel.FuelType.GetDescription()}</b>  ");
             }
 
             sb.AppendLine();
-            sb.AppendLine("Якщо усе ок, обирайте (на клавіатурі) \"Видалити АЗС\"\n");
+            sb.AppendLine("Якщо <b>все вірно</b>, обирайте (на клавіатурі) <b>\"✅Видалити АЗС\"</b>");
 
             return Task.FromResult(sb.ToString());
         }
@@ -101,7 +101,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
         private async Task<IReplyMarkup> GetCustomKeyboard()
         {
             var keyboard = new List<KeyboardButton[]>();
-            keyboard.Add(new KeyboardButton[] { "Видалити АЗС" });
+            keyboard.Add(new KeyboardButton[] { "✅Видалити АЗС" });
             keyboard.Add(new KeyboardButton[] { "До головної" });
 
             return new ReplyKeyboardMarkup(keyboard);

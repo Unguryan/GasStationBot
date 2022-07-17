@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GasStationBot.Domain", "Gas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GasStationBot.Infrastructure", "GasStationBot.Infrastructure\GasStationBot.Infrastructure.csproj", "{8F7F4954-3205-4498-B7A2-B86FDF6E3967}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GasStationBot.WebHook", "GasStationBot.WebHook\GasStationBot.WebHook.csproj", "{3B742B67-1602-45DE-B897-DCC34EEC14AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GasStationBot.WebHook", "GasStationBot.WebHook\GasStationBot.WebHook.csproj", "{3B742B67-1602-45DE-B897-DCC34EEC14AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GasStationBot.OKKO_Station", "GasStationBot.OKKO_Station\GasStationBot.OKKO_Station.csproj", "{B9565677-BD95-41A5-BEB1-7424A70598F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{3B742B67-1602-45DE-B897-DCC34EEC14AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B742B67-1602-45DE-B897-DCC34EEC14AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B742B67-1602-45DE-B897-DCC34EEC14AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9565677-BD95-41A5-BEB1-7424A70598F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9565677-BD95-41A5-BEB1-7424A70598F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9565677-BD95-41A5-BEB1-7424A70598F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9565677-BD95-41A5-BEB1-7424A70598F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

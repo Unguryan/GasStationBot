@@ -4,6 +4,7 @@ using GasStationBot.Domain.Extensions;
 using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace GasStationBot.Infrastructure.Services
 {
@@ -76,20 +77,20 @@ namespace GasStationBot.Infrastructure.Services
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("Апдейт по АЗС!");
+            sb.AppendLine("📍 <b>Апдейт по АЗС</b> 📍");
 
-            sb.AppendLine($"Власник АЗС: {userGasStation.Provider}");
-            sb.AppendLine($"Місто: {userGasStation.City}");
-            sb.AppendLine($"Адреса: {userGasStation.Address}");
+            sb.AppendLine($"Власник АЗС: <b>{userGasStation.Provider}</b>");
+            sb.AppendLine($"Місто: <b>{userGasStation.City}</b>");
+            sb.AppendLine($"Адреса: <b>{userGasStation.Address}🇺🇦</b>");
             sb.AppendLine();
 
-            sb.AppendLine($"Оновлене Паливо: ");
+            sb.AppendLine($"<b>Оновлене Паливо⛽️: </b>");
 
             foreach (var fuel in updatedFuels)
             {
                 var sbFuelState = new StringBuilder();
 
-                sbFuelState.Append($"Паливо {fuel.FuelType.GetDescription()} - ");
+                sbFuelState.Append($"📍<b>{fuel.FuelType.GetDescription()}</b> - ");
                 for (int i = 0; i < fuel.StateOfFuel.Count; i++)
                 {
                     sbFuelState.Append($"{fuel.StateOfFuel[i].GetDescription()}");
@@ -149,7 +150,7 @@ namespace GasStationBot.Infrastructure.Services
         {
             try
             {
-                await _botClient.SendTextMessageAsync(new ChatId(long.Parse(userId)), message);
+                await _botClient.SendTextMessageAsync(new ChatId(long.Parse(userId)), message, ParseMode.Html);
             }
             catch
             {

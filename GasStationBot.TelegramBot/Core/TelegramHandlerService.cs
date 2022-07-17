@@ -94,6 +94,13 @@ namespace GasStationBot.TelegramBot.Core
                 {
                     _userStateService.SetUserState(userId, updatedUserState.Value);
                 }
+                //if start, then open main menu
+                if (userMessage.Contains("/start"))
+                {
+                    await _mediator.Send(_commandFactory.TryToCreateEmptyCommandByUserState(parseResult.NextState!.Value, userId));
+                    _userStateService.SetUserState(userId, parseResult.NextState!.Value);
+                }
+
                 return;
 
                 //if (!parseResult.IsMessageOnly)

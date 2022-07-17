@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GasStationBot.Application\GasStationBot.Application.csproj" />
+    <ProjectReference Include="..\GasStationBot.OKKO_Station\GasStationBot.OKKO_Station.csproj" />
     <ProjectReference Include="..\GasStationBot.TelegramBot\GasStationBot.TelegramBot.csproj" />
     <ProjectReference Include="..\GasStationBot.WOG_Station\GasStationBot.WOG_Station.csproj" />
   </ItemGroup>

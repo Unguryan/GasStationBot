@@ -25,7 +25,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             return new ReplyKeyboardMarkup(
                new[]
                {
-                   new KeyboardButton[] { "Ваші підписки", },
+                   new KeyboardButton[] { "Мої підписки", },
                    new KeyboardButton[] { "Додати підписку", },
                    new KeyboardButton[] { "Видалити підписку", },
                    new KeyboardButton[] { "Про бота", },
@@ -40,7 +40,7 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             _userStateService.ClearTempData(Command.UserId);
             var state = Command.UserMessage switch
             {
-                "Ваші підписки" => UserState.ShowGasStation,
+                "Мої підписки" => UserState.ShowGasStation,
                 "Додати підписку" => UserState.AddGasStation_SelectProvider,
                 "Видалити підписку" => UserState.RemoveGasStation_ListGasStations,
                 "Про бота" => UserState.About,
