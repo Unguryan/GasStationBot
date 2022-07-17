@@ -137,7 +137,8 @@ namespace GasStationBot.TelegramBot.CommandHandlers
             var gasStations = await gsService.GetGasStationsWithoutAdditionalData();
             if (!user.GasStations.Any())
             {
-                return gasStations.ToList();
+                return gasStations.Where(gs => gs.City == tempData.City).ToList();
+                //return gasStations.ToList();
             }
 
             var list = new List<GasStation>();
